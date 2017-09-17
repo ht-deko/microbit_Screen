@@ -160,7 +160,7 @@ public:
   void clearScreen();
   void plot(const uint8_t x, const uint8_t y);
   void unplot(const uint8_t x, const uint8_t y);
-  bool toggle(const uint8_t x, const uint8_t y);
+  void toggle(const uint8_t x, const uint8_t y);
   bool point(const uint8_t x, const uint8_t y);
   void showString(const String str);
   void showNumber(const int value);
