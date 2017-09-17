@@ -58,7 +58,7 @@ void microbit_Screen::unplot(const uint8_t x, const uint8_t y) {
   pset(x, y, LOW);
 }
 
-bool microbit_Screen::toggle(const uint8_t x, const uint8_t y) {
+void microbit_Screen::toggle(const uint8_t x, const uint8_t y) {
   screenArr[x][y] = !screenArr[x][y];
   pset(x, y, screenArr[x][y]);
 }
