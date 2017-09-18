@@ -253,6 +253,7 @@ class microbit_Screen {
 private:
   bool screenArr[colCount][rowCount];
   void pset(const uint8_t x, const uint8_t y, const uint8_t mode);
+  void showData(const uint8_t column, const uint8_t colData);
 public:
   microbit_Screen();
   void begin();
