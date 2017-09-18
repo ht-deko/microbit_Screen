@@ -116,11 +116,12 @@ void microbit_Screen::showString(const String str) {
 
   idx = 0;
   do {
-    for (uint8_t l = 0; l < 8; l++) {
+    unsigned long tick = millis();
+    do {
       for (uint8_t x = 0; x < colCount; x++) {
         showData(x, strBuf[x + idx]);
       }
-    }
+    } while ((millis() - tick) < 150); 
     idx++;
   } while ((idx < dStr.length() * colCount + colCount) && !isSingleChar);
 
