@@ -21,17 +21,17 @@ microbit_Screen::microbit_Screen() {
 }
 
 void microbit_Screen::begin() {
-  for (int i = 0; i < max_cols; i++)
+  for (uint8_t i = 0; i < max_cols; i++)
     pinMode(cols[i], OUTPUT);
-  for (int i = 0; i < max_rows; i++)
+  for (uint8_t i = 0; i < max_rows; i++)
     pinMode(rows[i], OUTPUT);
   clearScreen();
 }
 
 void microbit_Screen::clearScreen() {
-  for (int i = 0; i < max_cols; i++)
+  for (uint8_t i = 0; i < max_cols; i++)
     digitalWrite(cols[i], HIGH);
-  for (int i = 0; i < max_rows; i++)
+  for (uint8_t i = 0; i < max_rows; i++)
     digitalWrite(rows[i], LOW);
   for (uint8_t l = 0; l < rowCount; l++) {
     for (uint8_t i = 0; i < colCount; i++) {
@@ -96,9 +96,9 @@ void microbit_Screen::showString(const String str) {
   bool isSingleChar = (dStr.length() == 1);
   uint8_t* strBuf = new uint8_t[dStr.length() * colCount + colCount - 1];
 
-  int idx = 0;
-  for (int c = 0; c < dStr.length(); c++) {
-    int charidx = dStr.charAt(c);
+  uint32_t idx = 0;
+  for (uint32_t c = 0; c < dStr.length(); c++) {
+    uint32_t charidx = dStr.charAt(c);
     if ((charidx < 0x20) || (charidx > 0x7f))
       charidx = 0x00;
     else
@@ -115,7 +115,7 @@ void microbit_Screen::showString(const String str) {
 
   idx = 0;
   do {
-    unsigned long tick = millis();
+    uint32_t tick = millis();
     do {
       showData(&strBuf[idx]);
     } while ((millis() - tick) < 150); 
@@ -125,13 +125,13 @@ void microbit_Screen::showString(const String str) {
   delete[] strBuf;
 }
 
-void microbit_Screen::showNumber(const int value) {
+void microbit_Screen::showNumber(const int32_t value) {
   String dStr = String(value, DEC);
   showString(dStr);
 }
 
 void microbit_Screen::showIcon(const IconNames icon) {
-  unsigned long tick = millis();
+  uint32_t tick = millis();
   do {
     showData(LED_ICON[(int)icon]);
   } while ((millis() - tick) < 750);  
@@ -139,9 +139,26 @@ void microbit_Screen::showIcon(const IconNames icon) {
 
 void microbit_Screen::showArrow(const uint8_t direction) {
   uint8_t d = direction % 8;
-  unsigned long tick = millis();
+  uint32_t tick = millis();
   do {
     showData(LED_ARROW[d]);
+  } while ((millis() - tick) < 750);  
+}
+
+void microbit_Screen::showLeds(const String str) {
+  uint8_t LED_DATA[colCount] = {0, 0, 0, 0, 0}; 
+
+  for (int y=0; y<rowCount; y++) {
+    for (int x=0; x<colCount; x++) {
+      if (str.charAt(y * colCount + x) == 0x23) {
+        LED_DATA[x] |= (1 << y);
+      }
+    }
+  }
+  
+  uint32_t tick = millis();
+  do {
+    showData(LED_DATA);
   } while ((millis() - tick) < 750);  
 }
 
