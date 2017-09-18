@@ -263,9 +263,10 @@ public:
   void toggle(const uint8_t x, const uint8_t y);
   bool point(const uint8_t x, const uint8_t y);
   void showString(const String str);
-  void showNumber(const int value);
+  void showNumber(const int32_t value);
   void showIcon(const IconNames icon);
   void showArrow(const uint8_t direction);
+  void showLeds(const String str);
 };
 
 extern microbit_Screen SCREEN;
