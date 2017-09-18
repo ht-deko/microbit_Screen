@@ -150,4 +150,27 @@ void microbit_Screen::showIcon(const IconNames icon) {
   } while ((millis() - tick) < 750);  
 }
 
+void microbit_Screen::showArrow(const uint8_t direction) {
+  uint8_t d = direction % 8;
+  unsigned long tick = millis();
+  do {
+    for (uint8_t x = 0; x < colCount; x++) {
+      uint8_t data = LED_ARROW[d][x];
+      for (uint8_t y = 0; y < rowCount; y++) {
+        if (data & 1) {
+          LED_POINT position = LED_POS[y][x];
+          digitalWrite(cols[position.x], LOW );
+          digitalWrite(rows[position.y], HIGH);
+          delay(1);
+          digitalWrite(cols[position.x], HIGH);
+          digitalWrite(rows[position.y], LOW );
+        } else {
+          delay(1);
+        }
+        data = data >> 1;
+      }
+    }
+  } while ((millis() - tick) < 750);  
+}
+
 microbit_Screen SCREEN;
