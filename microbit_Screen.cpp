@@ -86,16 +86,16 @@ void microbit_Screen::showData(const uint8_t *DataArray) {
   }  
 }
 
-void microbit_Screen::showString(const String str) {
+void microbit_Screen::showString(const String text, const uint32_t interval) {
   clearScreen();
 
   String dStr;
-  if (str.length() == 0)
+  if (text.length() == 0)
     dStr = " ";
-  else if (str.length() == 1)
-    dStr = str;
+  else if (text.length() == 1)
+    dStr = text;
   else
-    dStr = " " + str + " ";
+    dStr = " " + text + " ";
   bool isSingleChar = (dStr.length() == 1);
   uint8_t* strBuf = new uint8_t[dStr.length() * colCount + colCount - 1];
 
@@ -121,34 +121,34 @@ void microbit_Screen::showString(const String str) {
     uint32_t tick = millis();
     do {
       showData(&strBuf[idx]);
-    } while ((millis() - tick) < 150); 
+    } while ((millis() - tick) < interval); 
     idx++;
   } while ((idx < dStr.length() * colCount + colCount) && !isSingleChar);
 
   delete[] strBuf;
 }
 
-void microbit_Screen::showNumber(const int32_t value) {
+void microbit_Screen::showNumber(const int32_t value, const uint32_t interval) {
   String dStr = String(value, DEC);
-  showString(dStr);
+  showString(dStr, interval);
 }
 
-void microbit_Screen::showIcon(const IconNames icon) {
+void microbit_Screen::showIcon(const IconNames icon, const uint32_t interval) {
   uint32_t tick = millis();
   do {
     showData(LED_ICON[(int)icon]);
-  } while ((millis() - tick) < 750);  
+  } while ((millis() - tick) < interval);  
 }
 
-void microbit_Screen::showArrow(const uint8_t direction) {
-  uint8_t d = direction % 8;
+void microbit_Screen::showArrow(const ArrowNames direction, const uint32_t interval) {
+  uint8_t d = (int)direction % 8;
   uint32_t tick = millis();
   do {
     showData(LED_ARROW[d]);
-  } while ((millis() - tick) < 750);  
+  } while ((millis() - tick) < interval);  
 }
 
-void microbit_Screen::showLeds(const String str) {
+void microbit_Screen::showLeds(const String str, const uint32_t interval) {
   uint8_t LED_DATA[colCount] = {0, 0, 0, 0, 0}; 
 
   for (int y=0; y<rowCount; y++) {
@@ -162,7 +162,7 @@ void microbit_Screen::showLeds(const String str) {
   uint32_t tick = millis();
   do {
     showData(LED_DATA);
-  } while ((millis() - tick) < 750);  
+  } while ((millis() - tick) < interval);  
 }
 
 microbit_Screen SCREEN;
