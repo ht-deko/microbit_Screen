@@ -1,6 +1,6 @@
 /* 
   microbit_Screen.h - LED Screen library for micro:bit
-  (Arduino Core for Nordic Semiconductor nRF5 based boards)
+  (for "Arduino Core for Nordic Semiconductor nRF5 based boards")
   Copyright (c) 2017 Hideaki Tominaga. All rights reserved.
    
   This library is free software; you can redistribute it and/or
