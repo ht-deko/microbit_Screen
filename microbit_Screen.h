@@ -237,6 +237,17 @@ const uint8_t LED_ICON[40][colCount] PROGMEM =
   {0x1B, 0x1B, 0x04, 0x0A, 0x11}, // Scissors    
 };
 
+enum class ArrowNames {
+  North = 0,
+  NorthEast = 1, 
+  East = 2,
+  SouthEast = 3,
+  South = 4,
+  SouthWest = 5,
+  West = 6,
+  NorthWest = 7
+};
+
 const uint8_t LED_ARROW[8][colCount] PROGMEM =
 {
   {0x04, 0x02, 0x1F, 0x02, 0x04}, // 0       
@@ -262,11 +273,11 @@ public:
   void unplot(const uint8_t x, const uint8_t y);
   void toggle(const uint8_t x, const uint8_t y);
   bool point(const uint8_t x, const uint8_t y);
-  void showString(const String str);
-  void showNumber(const int32_t value);
-  void showIcon(const IconNames icon);
-  void showArrow(const uint8_t direction);
-  void showLeds(const String str);
+  void showString(const String text, const uint32_t interval = 150);
+  void showNumber(const int32_t value, const uint32_t interval = 150);
+  void showIcon(const IconNames icon, const uint32_t interval = 750);
+  void showArrow(const ArrowNames direction, const uint32_t interval = 750);
+  void showLeds(const String str, const uint32_t interval = 400);
 };
 
 extern microbit_Screen SCREEN;
