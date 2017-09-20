@@ -24,6 +24,9 @@ microbit_Screen::microbit_Screen() {
 }
 
 void microbit_Screen::pset(const uint8_t x, const uint8_t y, const uint8_t mode) {
+  if (!isEnabled)
+    return;
+
   LED_POINT position = LED_POS[y][x];
   digitalWrite(cols[position.x], !mode);
   digitalWrite(rows[position.y], mode);
@@ -31,6 +34,9 @@ void microbit_Screen::pset(const uint8_t x, const uint8_t y, const uint8_t mode)
 }
 
 void microbit_Screen::showData(const uint8_t *DataArray) {
+  if (!isEnabled)
+    return;
+
   uint32_t idx = 0;
   do {
     for (uint8_t x = 0; x < colCount; x++) {
@@ -56,6 +62,7 @@ void microbit_Screen::begin() {
     pinMode(cols[i], OUTPUT);
   for (uint8_t i = 0; i < max_rows; i++)
     pinMode(rows[i], OUTPUT);
+  isEnabled = true;
   clearScreen();
 }
 
@@ -74,6 +81,13 @@ void microbit_Screen::clearScreen() {
     }
   }
   setBrightness(0xFF);
+  isAnimated = true;
+}
+
+void microbit_Screen::enable(bool on) {
+  isEnabled = on;
+  if (!isEnabled)
+    clearScreen(); 
 }
 
 void microbit_Screen::plot(const uint8_t x, const uint8_t y) {
@@ -109,6 +123,9 @@ void microbit_Screen::plotBarGraph(const uint32_t value, const uint32_t high) {
 }
 
 void microbit_Screen::plotBrightness(const uint8_t x, const uint8_t y, const uint8_t brightness) {
+  if (!isEnabled)
+    return;
+
   uint32_t idx = 0;
   LED_POINT position = LED_POS[y][x];
   do {
@@ -201,6 +218,10 @@ void microbit_Screen::showString(const String text, const uint32_t interval) {
 
   idx = 0;
   do {
+    if (!isAnimated) {
+      clearScreen();
+      break;
+    }
     uint32_t tick = millis();
     do {
       showData(&strBuf[idx]);
@@ -209,6 +230,10 @@ void microbit_Screen::showString(const String text, const uint32_t interval) {
   } while ((idx < (bufSize - colCount - 1)) && !isSingleChar);
 
   delete[] strBuf;
+}
+
+void microbit_Screen::stopAnimation() {
+  isAnimated = false;
 }
 
 void microbit_Screen::toggle(const uint8_t x, const uint8_t y) {
