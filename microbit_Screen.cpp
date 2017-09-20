@@ -165,4 +165,32 @@ void microbit_Screen::showLeds(const String str, const uint32_t interval) {
   } while ((millis() - tick) < interval);  
 }
 
+void microbit_Screen::plotBarGraph(const uint32_t value, const uint32_t high) {
+  uint8_t LED_DATA[colCount] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF}; 
+  uint32_t dValue = value;
+  uint32_t dHigh = high;
+  if (dHigh < 15)
+    dHigh = 15;
+  if (dValue > dHigh)
+    dValue = dHigh;
+
+  uint8_t percentage = dValue * 100 / dHigh;
+  uint8_t shiftBit = 5 - (percentage / 20);
+  uint8_t remainder = (percentage % 20);
+  uint8_t remainderBit = 1 << (shiftBit - 1);
+  for (uint8_t i=0; i<colCount; i++)
+    LED_DATA[i] = LED_DATA[i] << shiftBit;
+  if (remainder > 13) {
+      LED_DATA[0] |= remainderBit;
+      LED_DATA[4] |= remainderBit;
+  }
+  if (remainder > 6) {
+      LED_DATA[1] |= remainderBit;
+      LED_DATA[3] |= remainderBit;
+  }
+  LED_DATA[2] |= remainderBit;
+
+  showData(LED_DATA);
+}
+
 microbit_Screen SCREEN;
