@@ -179,7 +179,8 @@ void microbit_Screen::showString(const String text, const uint32_t interval) {
   else
     dStr = " " + text + " ";
   bool isSingleChar = (dStr.length() == 1);
-  uint8_t* strBuf = new uint8_t[dStr.length() * colCount + colCount - 1];
+  uint32_t bufSize = dStr.length() * (colCount + 1) - 1;
+  uint8_t* strBuf = new uint8_t[bufSize];
 
   uint32_t idx = 0;
   for (uint32_t c = 0; c < dStr.length(); c++) {
@@ -205,7 +206,7 @@ void microbit_Screen::showString(const String text, const uint32_t interval) {
       showData(&strBuf[idx]);
     } while ((millis() - tick) < interval); 
     idx++;
-  } while ((idx < dStr.length() * colCount + colCount) && !isSingleChar);
+  } while ((idx < (bufSize - colCount - 1)) && !isSingleChar);
 
   delete[] strBuf;
 }
