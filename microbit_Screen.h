@@ -278,6 +278,7 @@ public:
   void showIcon(const IconNames icon, const uint32_t interval = 750);
   void showArrow(const ArrowNames direction, const uint32_t interval = 750);
   void showLeds(const String str, const uint32_t interval = 400);
+  void plotBarGraph(const uint32_t value, const uint32_t high);
 };
 
 extern microbit_Screen SCREEN;
