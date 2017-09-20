@@ -262,6 +262,8 @@ const uint8_t LED_ARROW[8][colCount] PROGMEM =
 
 class microbit_Screen {
 private:
+  bool isEnabled;
+  bool isAnimated;
   bool screenArr[colCount][rowCount];
   uint8_t currentBrightness;
   void pset(const uint8_t x, const uint8_t y, const uint8_t mode);
@@ -271,6 +273,7 @@ public:
   void begin();
   uint8_t brightness();
   void clearScreen();
+  void enable(bool on);
   void plot(const uint8_t x, const uint8_t y);
   void plotBarGraph(const uint32_t value, const uint32_t high);
   void plotBrightness(const uint8_t x, const uint8_t y, const uint8_t brightness);
@@ -281,6 +284,7 @@ public:
   void showLeds(const String str, const uint32_t interval = 400);
   void showNumber(const int32_t value, const uint32_t interval = 150);
   void showString(const String text, const uint32_t interval = 150);
+  void stopAnimation();
   void toggle(const uint8_t x, const uint8_t y);
   void unplot(const uint8_t x, const uint8_t y);
 };
