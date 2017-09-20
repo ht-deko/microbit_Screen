@@ -23,12 +23,44 @@
 microbit_Screen::microbit_Screen() {
 }
 
+void microbit_Screen::pset(const uint8_t x, const uint8_t y, const uint8_t mode) {
+  LED_POINT position = LED_POS[y][x];
+  digitalWrite(cols[position.x], !mode);
+  digitalWrite(rows[position.y], mode);
+  screenArr[x][y] = (mode == HIGH) ;
+}
+
+void microbit_Screen::showData(const uint8_t *DataArray) {
+  uint32_t idx = 0;
+  do {
+    for (uint8_t x = 0; x < colCount; x++) {
+      uint8_t data = DataArray[x];
+      for (uint8_t y = 0; y < rowCount; y++) {
+        if ((data & 1) && (idx < currentBrightness)) {
+          LED_POINT position = LED_POS[y][x];
+          digitalWrite(cols[position.x], LOW );
+          digitalWrite(rows[position.y], HIGH);
+          delayMicroseconds(5);
+          digitalWrite(cols[position.x], HIGH);
+          digitalWrite(rows[position.y], LOW );
+        }
+        data >>= 1;
+      }  
+    }
+    idx++;
+  } while (idx < 256);
+}
+
 void microbit_Screen::begin() {
   for (uint8_t i = 0; i < max_cols; i++)
     pinMode(cols[i], OUTPUT);
   for (uint8_t i = 0; i < max_rows; i++)
     pinMode(rows[i], OUTPUT);
   clearScreen();
+}
+
+uint8_t microbit_Screen::brightness() {
+  return (currentBrightness);
 }
 
 void microbit_Screen::clearScreen() {
@@ -41,49 +73,99 @@ void microbit_Screen::clearScreen() {
       screenArr[i][l] = false;
     }
   }
-}
-
-void microbit_Screen::pset(const uint8_t x, const uint8_t y, const uint8_t mode) {
-  LED_POINT position = LED_POS[y][x];
-  digitalWrite(cols[position.x], !mode);
-  digitalWrite(rows[position.y], mode);
-  screenArr[x][y] = (mode == HIGH) ;
+  setBrightness(0xFF);
 }
 
 void microbit_Screen::plot(const uint8_t x, const uint8_t y) {
   pset(x, y, HIGH);
 }
 
-void microbit_Screen::unplot(const uint8_t x, const uint8_t y) {
-  pset(x, y, LOW);
+void microbit_Screen::plotBarGraph(const uint32_t value, const uint32_t high) {
+  uint8_t LED_DATA[colCount] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF}; 
+  uint32_t dValue = value;
+  uint32_t dHigh = high;
+  if (dHigh < 15)
+    dHigh = 15;
+  if (dValue > dHigh)
+    dValue = dHigh;
+
+  uint8_t percentage = dValue * 100 / dHigh;
+  uint8_t shiftBit = 5 - (percentage / 20);
+  uint8_t remainder = (percentage % 20);
+  uint8_t remainderBit = 1 << (shiftBit - 1);
+  for (uint8_t i=0; i<colCount; i++)
+    LED_DATA[i] = LED_DATA[i] << shiftBit;
+  if (remainder > 13) {
+      LED_DATA[0] |= remainderBit;
+      LED_DATA[4] |= remainderBit;
+  }
+  if (remainder > 6) {
+      LED_DATA[1] |= remainderBit;
+      LED_DATA[3] |= remainderBit;
+  }
+  LED_DATA[2] |= remainderBit;
+
+  showData(LED_DATA);
 }
 
-void microbit_Screen::toggle(const uint8_t x, const uint8_t y) {
-  screenArr[x][y] = !screenArr[x][y];
-  pset(x, y, screenArr[x][y]);
+void microbit_Screen::plotBrightness(const uint8_t x, const uint8_t y, const uint8_t brightness) {
+  uint32_t idx = 0;
+  LED_POINT position = LED_POS[y][x];
+  do {
+    if (idx < brightness) {
+      digitalWrite(cols[position.x], LOW);
+      digitalWrite(rows[position.y], HIGH);
+      delayMicroseconds(1);
+      digitalWrite(cols[position.x], HIGH);
+      digitalWrite(rows[position.y], LOW);
+    }  
+    idx++;
+  } while (idx < 256);    
 }
 
 bool microbit_Screen::point(const uint8_t x, const uint8_t y) {
   return (screenArr[x][y]);
 }
 
-void microbit_Screen::showData(const uint8_t *DataArray) {
-  for (uint8_t x = 0; x < colCount; x++) {
-    uint8_t data = DataArray[x];
-    for (uint8_t y = 0; y < rowCount; y++) {
-      if (data & 1) {
-        LED_POINT position = LED_POS[y][x];
-        digitalWrite(cols[position.x], LOW );
-        digitalWrite(rows[position.y], HIGH);
-        delay(1);
-        digitalWrite(cols[position.x], HIGH);
-        digitalWrite(rows[position.y], LOW );
-      } else {
-        delay(1);
+void microbit_Screen::setBrightness(const uint8_t value) {
+  currentBrightness = value; 
+}
+
+void microbit_Screen::showArrow(const ArrowNames direction, const uint32_t interval) {
+  uint8_t d = (int)direction % 8;
+  uint32_t tick = millis();
+  do {
+    showData(LED_ARROW[d]);
+  } while ((millis() - tick) < interval);  
+}
+
+void microbit_Screen::showIcon(const IconNames icon, const uint32_t interval) {
+  uint32_t tick = millis();
+  do {
+    showData(LED_ICON[(int)icon]);
+  } while ((millis() - tick) < interval);  
+}
+
+void microbit_Screen::showLeds(const String str, const uint32_t interval) {
+  uint8_t LED_DATA[colCount] = {0, 0, 0, 0, 0}; 
+
+  for (int y=0; y<rowCount; y++) {
+    for (int x=0; x<colCount; x++) {
+      if (str.charAt(y * colCount + x) == 0x23) {
+        LED_DATA[x] |= (1 << y);
       }
-      data = data >> 1;
-    }  
-  }  
+    }
+  }
+  
+  uint32_t tick = millis();
+  do {
+    showData(LED_DATA);
+  } while ((millis() - tick) < interval);  
+}
+
+void microbit_Screen::showNumber(const int32_t value, const uint32_t interval) {
+  String dStr = String(value, DEC);
+  showString(dStr, interval);
 }
 
 void microbit_Screen::showString(const String text, const uint32_t interval) {
@@ -128,69 +210,13 @@ void microbit_Screen::showString(const String text, const uint32_t interval) {
   delete[] strBuf;
 }
 
-void microbit_Screen::showNumber(const int32_t value, const uint32_t interval) {
-  String dStr = String(value, DEC);
-  showString(dStr, interval);
+void microbit_Screen::toggle(const uint8_t x, const uint8_t y) {
+  screenArr[x][y] = !screenArr[x][y];
+  pset(x, y, screenArr[x][y]);
 }
 
-void microbit_Screen::showIcon(const IconNames icon, const uint32_t interval) {
-  uint32_t tick = millis();
-  do {
-    showData(LED_ICON[(int)icon]);
-  } while ((millis() - tick) < interval);  
-}
-
-void microbit_Screen::showArrow(const ArrowNames direction, const uint32_t interval) {
-  uint8_t d = (int)direction % 8;
-  uint32_t tick = millis();
-  do {
-    showData(LED_ARROW[d]);
-  } while ((millis() - tick) < interval);  
-}
-
-void microbit_Screen::showLeds(const String str, const uint32_t interval) {
-  uint8_t LED_DATA[colCount] = {0, 0, 0, 0, 0}; 
-
-  for (int y=0; y<rowCount; y++) {
-    for (int x=0; x<colCount; x++) {
-      if (str.charAt(y * colCount + x) == 0x23) {
-        LED_DATA[x] |= (1 << y);
-      }
-    }
-  }
-  
-  uint32_t tick = millis();
-  do {
-    showData(LED_DATA);
-  } while ((millis() - tick) < interval);  
-}
-
-void microbit_Screen::plotBarGraph(const uint32_t value, const uint32_t high) {
-  uint8_t LED_DATA[colCount] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF}; 
-  uint32_t dValue = value;
-  uint32_t dHigh = high;
-  if (dHigh < 15)
-    dHigh = 15;
-  if (dValue > dHigh)
-    dValue = dHigh;
-
-  uint8_t percentage = dValue * 100 / dHigh;
-  uint8_t shiftBit = 5 - (percentage / 20);
-  uint8_t remainder = (percentage % 20);
-  uint8_t remainderBit = 1 << (shiftBit - 1);
-  for (uint8_t i=0; i<colCount; i++)
-    LED_DATA[i] = LED_DATA[i] << shiftBit;
-  if (remainder > 13) {
-      LED_DATA[0] |= remainderBit;
-      LED_DATA[4] |= remainderBit;
-  }
-  if (remainder > 6) {
-      LED_DATA[1] |= remainderBit;
-      LED_DATA[3] |= remainderBit;
-  }
-  LED_DATA[2] |= remainderBit;
-
-  showData(LED_DATA);
+void microbit_Screen::unplot(const uint8_t x, const uint8_t y) {
+  pset(x, y, LOW);
 }
 
 microbit_Screen SCREEN;
