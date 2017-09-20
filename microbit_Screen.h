@@ -263,22 +263,26 @@ const uint8_t LED_ARROW[8][colCount] PROGMEM =
 class microbit_Screen {
 private:
   bool screenArr[colCount][rowCount];
+  uint8_t currentBrightness;
   void pset(const uint8_t x, const uint8_t y, const uint8_t mode);
   void showData(const uint8_t *DataArray);
 public:
   microbit_Screen();
   void begin();
+  uint8_t brightness();
   void clearScreen();
   void plot(const uint8_t x, const uint8_t y);
-  void unplot(const uint8_t x, const uint8_t y);
-  void toggle(const uint8_t x, const uint8_t y);
-  bool point(const uint8_t x, const uint8_t y);
-  void showString(const String text, const uint32_t interval = 150);
-  void showNumber(const int32_t value, const uint32_t interval = 150);
-  void showIcon(const IconNames icon, const uint32_t interval = 750);
-  void showArrow(const ArrowNames direction, const uint32_t interval = 750);
-  void showLeds(const String str, const uint32_t interval = 400);
   void plotBarGraph(const uint32_t value, const uint32_t high);
+  void plotBrightness(const uint8_t x, const uint8_t y, const uint8_t brightness);
+  bool point(const uint8_t x, const uint8_t y);
+  void setBrightness(const uint8_t value);
+  void showArrow(const ArrowNames direction, const uint32_t interval = 750);
+  void showIcon(const IconNames icon, const uint32_t interval = 750);
+  void showLeds(const String str, const uint32_t interval = 400);
+  void showNumber(const int32_t value, const uint32_t interval = 150);
+  void showString(const String text, const uint32_t interval = 150);
+  void toggle(const uint8_t x, const uint8_t y);
+  void unplot(const uint8_t x, const uint8_t y);
 };
 
 extern microbit_Screen SCREEN;
