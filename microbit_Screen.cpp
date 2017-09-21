@@ -2,17 +2,17 @@
   microbit_Screen.cpp - LED Screen library for micro:bit
   (for "Arduino Core for Nordic Semiconductor nRF5 based boards")
   Copyright (c) 2017 Hideaki Tominaga. All rights reserved.
-  
+
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Lesser General Public
   License as published by the Free Software Foundation; either
   version 2.1 of the License, or (at your option) any later version.
-  
+
   This library is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
   Lesser General Public License for more details.
-  
+
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -51,7 +51,7 @@ void microbit_Screen::showData(const uint8_t *DataArray) {
           digitalWrite(rows[position.y], LOW );
         }
         data >>= 1;
-      }  
+      }
     }
     idx++;
   } while (idx < 256);
@@ -87,7 +87,7 @@ void microbit_Screen::clearScreen() {
 void microbit_Screen::enable(bool on) {
   isEnabled = on;
   if (!isEnabled)
-    clearScreen(); 
+    clearScreen();
 }
 
 void microbit_Screen::plot(const uint8_t x, const uint8_t y) {
@@ -95,7 +95,7 @@ void microbit_Screen::plot(const uint8_t x, const uint8_t y) {
 }
 
 void microbit_Screen::plotBarGraph(const uint32_t value, const uint32_t high) {
-  uint8_t LED_DATA[colCount] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF}; 
+  uint8_t LED_DATA[colCount] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
   uint32_t dValue = value;
   uint32_t dHigh = high;
   if (dHigh < 15)
@@ -107,15 +107,15 @@ void microbit_Screen::plotBarGraph(const uint32_t value, const uint32_t high) {
   uint8_t shiftBit = 5 - (percentage / 20);
   uint8_t remainder = (percentage % 20);
   uint8_t remainderBit = 1 << (shiftBit - 1);
-  for (uint8_t i=0; i<colCount; i++)
+  for (uint8_t i = 0; i < colCount; i++)
     LED_DATA[i] = LED_DATA[i] << shiftBit;
   if (remainder > 13) {
-      LED_DATA[0] |= remainderBit;
-      LED_DATA[4] |= remainderBit;
+    LED_DATA[0] |= remainderBit;
+    LED_DATA[4] |= remainderBit;
   }
   if (remainder > 6) {
-      LED_DATA[1] |= remainderBit;
-      LED_DATA[3] |= remainderBit;
+    LED_DATA[1] |= remainderBit;
+    LED_DATA[3] |= remainderBit;
   }
   LED_DATA[2] |= remainderBit;
 
@@ -135,9 +135,9 @@ void microbit_Screen::plotBrightness(const uint8_t x, const uint8_t y, const uin
       delayMicroseconds(1);
       digitalWrite(cols[position.x], HIGH);
       digitalWrite(rows[position.y], LOW);
-    }  
+    }
     idx++;
-  } while (idx < 256);    
+  } while (idx < 256);
 }
 
 bool microbit_Screen::point(const uint8_t x, const uint8_t y) {
@@ -145,7 +145,7 @@ bool microbit_Screen::point(const uint8_t x, const uint8_t y) {
 }
 
 void microbit_Screen::setBrightness(const uint8_t value) {
-  currentBrightness = value; 
+  currentBrightness = value;
 }
 
 void microbit_Screen::showArrow(const ArrowNames direction, const uint32_t interval) {
@@ -153,31 +153,31 @@ void microbit_Screen::showArrow(const ArrowNames direction, const uint32_t inter
   uint32_t tick = millis();
   do {
     showData(LED_ARROW[d]);
-  } while ((millis() - tick) < interval);  
+  } while ((millis() - tick) < interval);
 }
 
 void microbit_Screen::showIcon(const IconNames icon, const uint32_t interval) {
   uint32_t tick = millis();
   do {
     showData(LED_ICON[(int)icon]);
-  } while ((millis() - tick) < interval);  
+  } while ((millis() - tick) < interval);
 }
 
 void microbit_Screen::showLeds(const String str, const uint32_t interval) {
-  uint8_t LED_DATA[colCount] = {0, 0, 0, 0, 0}; 
+  uint8_t LED_DATA[colCount] = {0, 0, 0, 0, 0};
 
-  for (int y=0; y<rowCount; y++) {
-    for (int x=0; x<colCount; x++) {
+  for (int y = 0; y < rowCount; y++) {
+    for (int x = 0; x < colCount; x++) {
       if (str.charAt(y * colCount + x) == 0x23) {
         LED_DATA[x] |= (1 << y);
       }
     }
   }
-  
+
   uint32_t tick = millis();
   do {
     showData(LED_DATA);
-  } while ((millis() - tick) < interval);  
+  } while ((millis() - tick) < interval);
 }
 
 void microbit_Screen::showNumber(const int32_t value, const uint32_t interval) {
@@ -225,7 +225,7 @@ void microbit_Screen::showString(const String text, const uint32_t interval) {
     uint32_t tick = millis();
     do {
       showData(&strBuf[idx]);
-    } while ((millis() - tick) < interval); 
+    } while ((millis() - tick) < interval);
     idx++;
   } while ((idx < (bufSize - colCount - 1)) && !isSingleChar);
 
