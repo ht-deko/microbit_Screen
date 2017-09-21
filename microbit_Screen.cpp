@@ -206,7 +206,8 @@ void microbit_Screen::showArrow(const ArrowNames direction, const uint32_t inter
    https://makecode.microbit.org/reference/basic/show-animation
 */
 void microbit_Screen::showAnimation(const String str, const uint32_t interval) {
-  uint8_t numAnimation = ((str.length() / rowCount) + 1) / (colCount * 2);
+  uint8_t numLineChar = (str.length() / rowCount);
+  uint8_t numAnimation = (numLineChar + 1) / (colCount * 2);
   uint8_t* strBuf = new uint8_t[numAnimation * colCount];
   uint8_t charWidth = colCount * 2; 
 
@@ -215,7 +216,7 @@ void microbit_Screen::showAnimation(const String str, const uint32_t interval) {
   for (uint32_t f = 0; f < numAnimation; f++) {
     for (int y = 0; y < rowCount; y++) {
       for (int x = 0; x < colCount; x++) {
-        if (str.charAt((f * charWidth) + (y * (numAnimation * charWidth - 1)) + (x * 2)) == 0x23)
+        if (str.charAt((f * charWidth) + (y * numLineChar) + (x * 2)) == 0x23)
           strBuf[f * colCount + x] |= (1 << y);
       }
     }
