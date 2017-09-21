@@ -20,9 +20,9 @@
 
 #include "microbit_Screen.h"
 
-microbit_Screen::microbit_Screen() {
-}
-
+/**
+ * pset() - private method
+ */
 void microbit_Screen::pset(const uint8_t x, const uint8_t y, const uint8_t mode) {
   if (!isEnabled)
     return;
@@ -33,6 +33,9 @@ void microbit_Screen::pset(const uint8_t x, const uint8_t y, const uint8_t mode)
   screenArr[x][y] = (mode == HIGH) ;
 }
 
+/**
+ * showData() - private method
+ */
 void microbit_Screen::showData(const uint8_t *DataArray) {
   if (!isEnabled)
     return;
@@ -57,6 +60,16 @@ void microbit_Screen::showData(const uint8_t *DataArray) {
   } while (idx < 256);
 }
 
+/**
+ * constructor
+ */
+microbit_Screen::microbit_Screen() {
+}
+
+/**
+ * begin()
+ * Set it once in setup().
+ */
 void microbit_Screen::begin() {
   for (uint8_t i = 0; i < max_cols; i++)
     pinMode(cols[i], OUTPUT);
@@ -66,6 +79,10 @@ void microbit_Screen::begin() {
   clearScreen();
 }
 
+/**
+ * brightness()
+ * https://makecode.microbit.org/reference/led/brightness
+ */
 uint8_t microbit_Screen::brightness() {
   return (currentBrightness);
 }
@@ -84,16 +101,28 @@ void microbit_Screen::clearScreen() {
   isAnimated = true;
 }
 
+/**
+ * enable()
+ * https://makecode.microbit.org/reference/led/enable
+ */
 void microbit_Screen::enable(bool on) {
   isEnabled = on;
   if (!isEnabled)
     clearScreen();
 }
 
+/**
+ * plot()
+ * https://makecode.microbit.org/reference/led/plot
+ */
 void microbit_Screen::plot(const uint8_t x, const uint8_t y) {
   pset(x, y, HIGH);
 }
 
+/**
+ * plotBarGraph()
+ * https://makecode.microbit.org/reference/led/plot-bar-graph
+ */
 void microbit_Screen::plotBarGraph(const uint32_t value, const uint32_t high) {
   uint8_t LED_DATA[colCount] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
   uint32_t dValue = value;
@@ -122,6 +151,10 @@ void microbit_Screen::plotBarGraph(const uint32_t value, const uint32_t high) {
   showData(LED_DATA);
 }
 
+/**
+ * plotBrightness()
+ * https://makecode.microbit.org/reference/led/plot-brightness
+ */
 void microbit_Screen::plotBrightness(const uint8_t x, const uint8_t y, const uint8_t brightness) {
   if (!isEnabled)
     return;
@@ -140,14 +173,26 @@ void microbit_Screen::plotBrightness(const uint8_t x, const uint8_t y, const uin
   } while (idx < 256);
 }
 
+/**
+ * point()
+ * https://makecode.microbit.org/reference/led/point
+ */
 bool microbit_Screen::point(const uint8_t x, const uint8_t y) {
   return (screenArr[x][y]);
 }
 
+/**
+ * setBrightness()
+ * https://makecode.microbit.org/reference/led/set-brightness
+ */
 void microbit_Screen::setBrightness(const uint8_t value) {
   currentBrightness = value;
 }
 
+/**
+ * showArrow()
+ * https://makecode.microbit.org/reference/basic/show-arrow
+ */
 void microbit_Screen::showArrow(const ArrowNames direction, const uint32_t interval) {
   uint8_t d = (int)direction % 8;
   uint32_t tick = millis();
@@ -156,6 +201,10 @@ void microbit_Screen::showArrow(const ArrowNames direction, const uint32_t inter
   } while ((millis() - tick) < interval);
 }
 
+/**
+ * showIcon()
+ * https://makecode.microbit.org/reference/basic/show-icon
+ */
 void microbit_Screen::showIcon(const IconNames icon, const uint32_t interval) {
   uint32_t tick = millis();
   do {
@@ -163,12 +212,16 @@ void microbit_Screen::showIcon(const IconNames icon, const uint32_t interval) {
   } while ((millis() - tick) < interval);
 }
 
+/**
+ * showLeds()
+ * https://makecode.microbit.org/reference/basic/show-leds
+ */
 void microbit_Screen::showLeds(const String str, const uint32_t interval) {
   uint8_t LED_DATA[colCount] = {0, 0, 0, 0, 0};
 
   for (int y = 0; y < rowCount; y++) {
     for (int x = 0; x < colCount; x++) {
-      if (str.charAt(y * colCount + x) == 0x23) {
+      if (str.charAt((y * (colCount * 2 - 1) + (x * 2) )) == 0x23) {
         LED_DATA[x] |= (1 << y);
       }
     }
@@ -180,11 +233,19 @@ void microbit_Screen::showLeds(const String str, const uint32_t interval) {
   } while ((millis() - tick) < interval);
 }
 
+/**
+ * showNumber()
+ * https://makecode.microbit.org/reference/basic/show-number
+ */
 void microbit_Screen::showNumber(const int32_t value, const uint32_t interval) {
   String dStr = String(value, DEC);
   showString(dStr, interval);
 }
 
+/**
+ * showString()
+ * https://makecode.microbit.org/reference/basic/show-string
+ */
 void microbit_Screen::showString(const String text, const uint32_t interval) {
   clearScreen();
 
@@ -232,15 +293,27 @@ void microbit_Screen::showString(const String text, const uint32_t interval) {
   delete[] strBuf;
 }
 
+/**
+ * stopAnimation()
+ * https://makecode.microbit.org/reference/led/stop-animation
+ */
 void microbit_Screen::stopAnimation() {
   isAnimated = false;
 }
 
+/**
+ * toggle()
+ * https://makecode.microbit.org/reference/led/toggle
+ */
 void microbit_Screen::toggle(const uint8_t x, const uint8_t y) {
   screenArr[x][y] = !screenArr[x][y];
   pset(x, y, screenArr[x][y]);
 }
 
+/**
+ * unplot()
+ * https://makecode.microbit.org/reference/led/unplot
+ */
 void microbit_Screen::unplot(const uint8_t x, const uint8_t y) {
   pset(x, y, LOW);
 }
