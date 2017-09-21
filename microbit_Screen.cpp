@@ -208,11 +208,9 @@ void microbit_Screen::showArrow(const ArrowNames direction, const uint32_t inter
 void microbit_Screen::showAnimation(const String str, const uint32_t interval) {
   uint8_t numLineChar = (str.length() / rowCount);
   uint8_t numAnimation = (numLineChar + 1) / (colCount * 2);
-  uint8_t* strBuf = new uint8_t[numAnimation * colCount];
   uint8_t charWidth = colCount * 2; 
+  uint8_t* strBuf = new uint8_t[numAnimation * colCount]();
 
-  for (uint32_t i = 0; i < numAnimation * colCount; i++) 
-    strBuf[i] = 0;
   for (uint32_t f = 0; f < numAnimation; f++) {
     for (int y = 0; y < rowCount; y++) {
       for (int x = 0; x < colCount; x++) {
