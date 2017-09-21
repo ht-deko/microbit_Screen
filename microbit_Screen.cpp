@@ -87,6 +87,10 @@ uint8_t microbit_Screen::brightness() {
   return (currentBrightness);
 }
 
+/**
+ * clearScreen()
+ * https://makecode.microbit.org/reference/basic/clear-screen
+ */
 void microbit_Screen::clearScreen() {
   for (uint8_t i = 0; i < max_cols; i++)
     digitalWrite(cols[i], HIGH);
