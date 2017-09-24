@@ -67,6 +67,23 @@ microbit_Screen::microbit_Screen() {
 }
 
 /**
+ * ambientLight()
+ * LED as Sensor.
+ */
+uint32_t microbit_Screen::ambientLight() {
+  int v = 0;
+  for (int x = 0; x < 3; x++) {
+    digitalWrite(cols[x], LOW);
+    pinMode(cols[x], INPUT);
+    v += analogRead(cols[x]);
+    pinMode(cols[x], OUTPUT);
+    digitalWrite(cols[x], HIGH);
+  }
+  // Serial.println(v);
+  return max(darknessValue - v, 0);  
+}
+
+/**
    begin()
    Set it once in setup().
 */
@@ -141,7 +158,7 @@ void microbit_Screen::plotBarGraph(const uint32_t value, const uint32_t high) {
   uint8_t remainder = (percentage % 20);
   uint8_t remainderBit = 1 << (shiftBit - 1);
   for (uint8_t i = 0; i < colCount; i++)
-    LED_DATA[i] = LED_DATA[i] << shiftBit;
+    LED_DATA[i] <<= shiftBit;
   if (remainder > 13) {
     LED_DATA[0] |= remainderBit;
     LED_DATA[4] |= remainderBit;
@@ -219,7 +236,7 @@ void microbit_Screen::showAnimation(const String str, const uint32_t interval) {
     for (int y = 0; y < rowCount; y++) {
       for (int x = 0; x < colCount; x++) {
         if (str.charAt((f * charWidth) + (y * numLineChar) + (x * 2)) == 0x23)
-          strBuf[f * colCount + x] |= (1 << y);
+          bitWrite(strBuf[f * colCount + x], y, HIGH);
       }
     }
   }  
@@ -259,7 +276,7 @@ void microbit_Screen::showLeds(const String str, const uint32_t interval) {
   for (int y = 0; y < rowCount; y++) {
     for (int x = 0; x < colCount; x++) {
       if (str.charAt((y * (colCount * 2 - 1) + (x * 2) )) == 0x23)
-        LED_DATA[x] |= (1 << y);
+        bitWrite(LED_DATA[x], y, HIGH);
     }
   }
 
