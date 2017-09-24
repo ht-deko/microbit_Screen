@@ -272,10 +272,10 @@ class microbit_Screen {
   public:
     microbit_Screen();
     void begin();
-    uint32_t ambientLight();
     uint8_t brightness();
     void clearScreen();
     void enable(bool on);
+    uint8_t lightLevel();
     void plot(const uint8_t x, const uint8_t y);
     void plotBarGraph(const uint32_t value, const uint32_t high);
     void plotBrightness(const uint8_t x, const uint8_t y, const uint8_t brightness);
