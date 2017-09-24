@@ -29,6 +29,7 @@ const uint8_t colCount PROGMEM = 5;
 const uint8_t rowCount PROGMEM = 5;
 const uint8_t cols[max_cols] PROGMEM = {3, 4, 10, 23, 24, 25, 9, 7, 6};
 const uint8_t rows[max_rows] PROGMEM = {26, 27, 28};
+const uint32_t darknessValue = 493;
 
 typedef struct TPoint {
   uint8_t x;
@@ -271,6 +272,7 @@ class microbit_Screen {
   public:
     microbit_Screen();
     void begin();
+    uint32_t ambientLight();
     uint8_t brightness();
     void clearScreen();
     void enable(bool on);
