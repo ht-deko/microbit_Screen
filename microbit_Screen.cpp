@@ -129,9 +129,7 @@ uint8_t microbit_Screen::lightLevel() {
     digitalWrite(cols[x], HIGH);
   }
   //Serial.println(v);
-  v = max(darknessValue - v, 0);
-  v = min(v, 255);
-  return v;  
+  return map(v, max(v, darknessValue), min(v, brightnessValue) , 0, 255);
 }
 
 /**
