@@ -67,23 +67,6 @@ microbit_Screen::microbit_Screen() {
 }
 
 /**
- * ambientLight()
- * LED as Sensor.
- */
-uint32_t microbit_Screen::ambientLight() {
-  int v = 0;
-  for (int x = 0; x < 3; x++) {
-    digitalWrite(cols[x], LOW);
-    pinMode(cols[x], INPUT);
-    v += analogRead(cols[x]);
-    pinMode(cols[x], OUTPUT);
-    digitalWrite(cols[x], HIGH);
-  }
-  // Serial.println(v);
-  return max(darknessValue - v, 0);  
-}
-
-/**
    begin()
    Set it once in setup().
 */
@@ -130,6 +113,25 @@ void microbit_Screen::enable(bool on) {
   isEnabled = on;
   if (!isEnabled)
     clearScreen();
+}
+
+/**
+ * lightLevel()
+ * https://makecode.microbit.org/reference/input/light-level
+ */
+uint8_t microbit_Screen::lightLevel() {
+  int v = 0;
+  for (int x = 0; x < 3; x++) {
+    digitalWrite(cols[x], LOW);
+    pinMode(cols[x], INPUT);
+    v += analogRead(cols[x]);
+    pinMode(cols[x], OUTPUT);
+    digitalWrite(cols[x], HIGH);
+  }
+  //Serial.println(v);
+  v = max(darknessValue - v, 0);
+  v = min(v, 255);
+  return v;  
 }
 
 /**
